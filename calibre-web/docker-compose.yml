@@ -1,0 +1,22 @@
+---
+version: "3.1"
+services:
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:arm64v8-2021.12.16
+    container_name: calibre-web
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Singapore
+    volumes:
+      - ./config:/config
+      - "${CALIBRE_WEB_LIBRARY_DIR:-./books}:/books"
+    ports:
+      - "${CALIBRE_WEB_PORT:-8083}:8083"
+    networks:
+      - npm-reverseproxy
+
+networks:
+  npm-reverseproxy:
+    external: true

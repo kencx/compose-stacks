@@ -1,0 +1,41 @@
+version: '3'
+services:
+
+  nginx-proxy-manager-db:
+    container_name: nginx-proxy-manager-db
+    image: 'yobasystems/alpine-mariadb:latest'
+    restart: unless-stopped
+    env_file: npmdb.env
+    volumes:
+      - "${NPM_DB_DIR:-./container_data/mysql}:/var/lib/mysql"
+    networks:
+      - npm
+
+  nginx-proxy-manager:
+    container_name: nginx-proxy-manager
+    image: 'jc21/nginx-proxy-manager:2.9.12'
+    env_file: npm.env
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - "${NPM_DATA_DIR:-./container_data/data}:/data"
+      - "${NPM_LE_DIR:-./container_data/letsencrypt}:/etc/letsencrypt"
+    depends_on:
+      - nginx-proxy-manager-db
+    networks:
+      - npm
+      - npm-reverseproxy
+    healthcheck:
+      test: ['CMD', '/bin/check-health']
+      interval: 10s
+      timeout: 3s
+
+networks:
+  npm:
+    name: nginx-proxy-manager
+  npm-reverseproxy:
+    external: true
+

@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+  app:
+    container_name: firefly
+    image: fireflyiii/core:version-5.6.6
+    restart: unless-stopped
+    env_file: firefly.env
+    volumes:
+      - "${FIREFLY_DATA_DIR:-./data}:/var/www/html/storage/upload"
+    ports:
+      - "127.0.0.1:${FIREFLY_PORT:-8080}:8080"
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-m", "10", "--retry", "5", "-o", "/dev/null", "http://healthchecks:8000/ping/1f2e6e97-d2ef-45d4-9324-69b78eb34b65"]
+      interval: 60s
+      start_period: 30s
+      retries: 5
+    networks:
+      - firefly
+      - npm-reverseproxy
+
+  db:
+    image: mariadb    
+    hostname: fireflydb
+    restart: unless-stopped
+    env_file: fireflydb.env
+    volumes:
+      - "${FIREFLY_DB_DIR:-./db}:/var/lib/mysql"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      start_period: 30s
+      retries: 5
+    networks:
+      - firefly
+
+networks:
+  firefly:
+    name: firefly
+  npm-reverseproxy:
+    external: true

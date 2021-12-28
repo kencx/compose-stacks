@@ -1,0 +1,31 @@
+version: "3"
+services:
+
+  healthchecks:
+    image: lscr.io/linuxserver/healthchecks:1.24.1
+    container_name: healthchecks
+    environment:
+      - PUID=1000
+      - PGID=1000
+        #- SITE_ROOT=<SITE_ROOT>
+        #- SITE_NAME=<SITE_NAME>
+        #- DEFAULT_FROM_EMAIL=<DEFAULT_FROM_EMAIL>
+      - EMAIL_HOST=localhost
+        #- EMAIL_PORT=25
+      - EMAIL_HOST_USER=test@test.com
+      - EMAIL_HOST_PASSWORD=test1234
+        #- EMAIL_USE_TLS=<True or False>
+        #- ALLOWED_HOSTS=<ALLOWED_HOSTS>
+      - SUPERUSER_EMAIL=kennethcheo1@gmail.com
+      - SUPERUSER_PASSWORD=g1ass431
+    volumes:
+      - "${HC_DATA_DIR:-./config}:/config"
+    ports:
+      - "${HC_PORT:-8000}:8000"
+    restart: unless-stopped
+    networks:
+      - npm-reverseproxy
+
+networks:
+  npm-reverseproxy:
+    external: true

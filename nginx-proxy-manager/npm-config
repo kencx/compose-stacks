@@ -1,0 +1,5 @@
+DB_MYSQL_HOST="nginx-proxy-manager-db"
+DB_MYSQL_PORT="3306"
+DB_MYSQL_USER="npm"
+DB_MYSQL_PASSWORD=changeme
+DB_MYSQL_NAME="npm"
