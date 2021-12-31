@@ -20,8 +20,8 @@ services:
     image: miniflux/miniflux:2.0.33
     env_file: miniflux.env
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:${MF_PORT:-8120}:8120"
+    #ports:
+      #- "127.0.0.1:${MF_PORT:-8120}:8120"
     depends_on:
       - db
     healthcheck:

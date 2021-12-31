@@ -20,8 +20,8 @@ services:
       - SUPERUSER_PASSWORD=g1ass431
     volumes:
       - "${HC_DATA_DIR:-./config}:/config"
-    ports:
-      - "127.0.0.1:${HC_PORT:-8000}:8000"
+    #ports:
+    # - "127.0.0.1:${HC_PORT:-8000}:8000"
     restart: unless-stopped
     networks:
       - npm-reverseproxy

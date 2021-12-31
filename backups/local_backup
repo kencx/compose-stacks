@@ -5,6 +5,8 @@ set -euo pipefail
 ######### CONFIG ##########
 USER=""
 DISK_UUID=
+EXCLUDED_FILES=""
+
 GLOBAL_FLAGS="-q"
 MOUNT_POINT="/media/wd"
 LOG_FILE="/home/$USER/logs/restic.log"
@@ -31,7 +33,7 @@ restic $GLOBAL_FLAGS check | tee -a $LOG_FILE
 
 # start backup
 echo "Performing backups..."
-restic $GLOBAL_FLAGS backup "/home/$USER" --exclude "/home/$USER/logs"
+restic $GLOBAL_FLAGS backup "/home/$USER" --exclude $EXCLUDED_FILES
 
 # post-backup check
 restic $GLOBAL_FLAGS check | tee -a $LOG_FILE
