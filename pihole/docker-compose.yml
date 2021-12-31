@@ -4,7 +4,7 @@ version: "3"
 services:
   pihole:
     container_name: pihole
-    image: pihole/pihole:2021.11
+    image: pihole/pihole:2021.12
     ports:
       - "53:53/tcp"
       - "53:53/udp"
@@ -23,9 +23,12 @@ services:
       - NET_ADMIN
     restart: unless-stopped
     networks:
-      - npm-reverseproxy
+      pihole:
+        ipv4_address: 172.30.0.2
 
 networks:
-  npm-reverseproxy:
-    external: true
-
+  pihole:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.1/24

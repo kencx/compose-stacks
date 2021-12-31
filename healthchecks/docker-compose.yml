@@ -21,7 +21,7 @@ services:
     volumes:
       - "${HC_DATA_DIR:-./config}:/config"
     ports:
-      - "${HC_PORT:-8000}:8000"
+      - "127.0.0.1:${HC_PORT:-8000}:8000"
     restart: unless-stopped
     networks:
       - npm-reverseproxy
