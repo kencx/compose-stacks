@@ -13,7 +13,7 @@ services:
 
   nginx-proxy-manager:
     container_name: nginx-proxy-manager
-    image: 'jc21/nginx-proxy-manager:2.9.12'
+    image: 'jc21/nginx-proxy-manager:2.9.15'
     env_file: npm.env
     restart: unless-stopped
     ports:
