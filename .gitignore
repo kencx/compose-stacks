@@ -1,0 +1,10 @@
+*
+
+!.gitignore
+!README.md
+
+# exclude all env files
+*.env
+
+# include all docker-compose files
+!homelab/*/*.yml
