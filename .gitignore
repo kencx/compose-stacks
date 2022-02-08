@@ -1,4 +1,11 @@
+# ignore everything
 *
+
+# but look inside sub-directories
+!*/
+
+# ignore all docker bind-mounts
+*/*/*
 
 !.gitignore
 !README.md
@@ -7,4 +14,4 @@
 *.env
 
 # include all docker-compose files
-!homelab/*/*.yml
+!*/docker-compose.yml
