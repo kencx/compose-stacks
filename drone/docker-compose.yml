@@ -17,7 +17,7 @@ services:
         restart: unless-stopped
         depends_on: 
           - drone-server
-        env_file: drone-runner.env
+        env_file: drone.env
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
 
