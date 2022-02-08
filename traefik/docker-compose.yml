@@ -14,8 +14,7 @@ services:
       - ../traefik.log:/traefik.log
       - ./acme/acme.json:/acme.json
       - ./rules:/rules
-    environment:
-      - DO_AUTH_TOKEN=71f50314054e14f45877a510eeb9b6ede230e31009be581f85f420f10945bc11
+    env_file: traefik.env
     networks:
       - proxy
     command:
