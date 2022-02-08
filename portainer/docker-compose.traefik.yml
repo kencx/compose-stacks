@@ -14,16 +14,16 @@ services:
     networks:
       - proxy
     labels:
-      # HTTP routers
       - "traefik.enable=true"
+      # HTTP routers
       - "traefik.http.routers.portainer-proxy.entrypoints=https"
       - "traefik.http.routers.portainer-proxy.rule=Host(`portainer.kencv.xyz`)"
       - "traefik.http.routers.portainer-proxy.tls=true"
-      ## Middlewares
-      # - "traefik.http.routers.portainer-proxy.middlewares=chain-no-auth@file"
+      - "traefik.http.routers.portainer-proxy.tls.certresolver=dns-dgo"
       ## HTTP Services
       - "traefik.http.routers.portainer-proxy.service=portainer-service"
-      - "traefik.http.services.portainer-service.loadbalancer.server.port=9443"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=9000"
+      - "traefik.docker.network=proxy"
 
 networks:
   proxy:
