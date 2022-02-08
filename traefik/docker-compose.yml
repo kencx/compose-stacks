@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ../traefik.log:/traefik.log
+      - ./acme/acme.json:/acme.json
+      - ./rules:/rules
+    environment:
+      - DO_AUTH_TOKEN=71f50314054e14f45877a510eeb9b6ede230e31009be581f85f420f10945bc11
+    networks:
+      - proxy
+    command:
+      - --entryPoints.http.address=:80
+      - --entryPoints.https.address=:443
+      - --entryPoints.traefik.address=:8080
+      - --api=true
+      - --api.insecure=true
+      - --log=true
+      - --log.level=DEBUG
+      - --accessLog=true
+      - --accessLog.filePath=/traefik.log
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.defaultRule=Host(`{{ index .Labels "com.docker.compose.service" }}.kencv.xyz`)
+      - --providers.docker.network=proxy
+      - --providers.file.directory=/rules
+      - --certificatesresolvers.dns-dgo.acme.email=kennethcheo1@gmail.com
+      - --certificatesresolvers.dns-dgo.acme.storage=acme.json
+      - --certificatesresolvers.dns-dgo.acme.dnschallenge=true
+      # - --certificatesresolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.dns-dgo.acme.dnschallenge.provider=digitalocean
+      - --certificatesresolvers.dns-dgo.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53
+    labels:
+      - "traefik.enable=true"
+      # HTTP to HTTPs redirects
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      # HTTP Routers
+      - "traefik.http.routers.traefik-rtr.entrypoints=https"
+      - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.kencv.xyz`)"
+      - "traefik.http.routers.traefik-rtr.tls=true"  # HTTPs only
+      # Comment out the below line after first run of traefik to force the use of wildcard certs
+      # - "traefik.http.routers.traefik-rtr.tls.certResolver=dns-dgo"
+      - "traefik.http.routers.traefik-rtr.tls.domains[0].main=kencv.xyz"
+      - "traefik.http.routers.traefik-rtr.tls.domains[0].sans=*.kencv.xyz"
+      # services - API
+      - "traefik.http.routers.traefik-rtr.service=api@internal"
+
+networks:
+  proxy:
+    external: true
+  default:
+    driver: bridge

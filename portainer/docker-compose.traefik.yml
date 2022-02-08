@@ -1,0 +1,30 @@
+---
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:2.11.0
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "${PORTAINER_DATA_DIR:-./data}:/data"
+      #ports:
+      #- "127.0.0.1:${PORTAINER_PORT:-9443}:9443"
+    networks:
+      - proxy
+    labels:
+      # HTTP routers
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer-proxy.entrypoints=https"
+      - "traefik.http.routers.portainer-proxy.rule=Host(`portainer.kencv.xyz`)"
+      - "traefik.http.routers.portainer-proxy.tls=true"
+      ## Middlewares
+      # - "traefik.http.routers.portainer-proxy.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.portainer-proxy.service=portainer-service"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=9443"
+
+networks:
+  proxy:
+    external: true
