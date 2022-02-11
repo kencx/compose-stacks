@@ -22,8 +22,8 @@ services:
       - npm-reverseproxy
 
   db:
+    container_name: fireflydb
     image: mariadb    
-    hostname: fireflydb
     restart: unless-stopped
     env_file: fireflydb.env
     volumes:

@@ -4,7 +4,7 @@ services:
   db:
     container_name: miniflux_db
     image: postgres:latest
-    env_file: minifluxdb.env
+    env_file: miniflux.env
     volumes:
       - ./miniflux-db:/var/lib/postgresql/data
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
       - db
     healthcheck:
       # test: ["CMD", "wget", "--spider", "localhost:8120"]
-      test: ["CMD", "wget", "-T", "10", "-t", "5", "-O", "/dev/null", "http://healthchecks:8000/ping/c603d973-2676-472c-a669-8b4190bf7901"]
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
       interval: 60s
       start_period: 30s
     networks:
