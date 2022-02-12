@@ -1,8 +1,5 @@
 # ignore everything
-*
-
-# but look inside sub-directories
-!*/
+#*
 
 # ignore all docker bind-mounts
 */*/*
@@ -12,6 +9,7 @@
 
 # exclude all env files
 *.env
+*.log
 
 # include all docker-compose files
 !*/*.yml

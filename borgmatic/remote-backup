@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/root/.local/bin/borgmatic -c /home/dietpi/docker/borgmatic/remote.yaml --verbosity -1 --syslog-verbosity 1
