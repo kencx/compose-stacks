@@ -7,7 +7,7 @@ location:
     # Tildes are expanded. If systemd service is used, then add local
     # repository paths in the systemd service file to the ReadWritePaths list.
     repositories:
-        - fbc9u3wb@fbc9u3wb.repo.borgbase.com:repo
+        - z2n027q5@z2n027q5.repo.borgbase.com:repo
 
 storage:
     encryption_passcommand: "cat /root/.borg-passphrase"
@@ -16,6 +16,7 @@ storage:
     retries: 3
     retry_wait: 10
 
+    ssh_command: ssh -i /home/borg/.ssh/id_borgbase
     archive_name_format: '{hostname}-{now}'
 
 retention:

@@ -2,12 +2,19 @@
 Description=borgmatic backup
 Wants=network-online.target
 After=network-online.target
-# Prevent borgmatic from running unless the machine is plugged into power. Remove this line if you
-# want to allow borgmatic to run anytime.
-ConditionACPower=true
 
 [Service]
 Type=oneshot
+User=borg
+Group=borg
+ExecStart=/usr/local/sbin/remote-backup
+
+# filesystem access
+#ProtectSystem=strict
+#ProtectControlGroups=true
+#ProtectKernelModules=true
+#ProtectKernelTunables=true
+#ReadWritePaths=/home/borg/ /home/dietpi/docker/ /root/.config/borg/ /root/.cache/borg/
 
 # Lower CPU and I/O priority.
 Nice=19
@@ -21,7 +28,16 @@ Restart=no
 # doesn't support this (pre-240 or so), you may have to remove this option.
 LogRateLimitIntervalSec=0
 
-# Delay start to prevent backups running during boot. Note that systemd-inhibit requires dbus and
-# dbus-user-session to be installed.
-ExecStartPre=sleep 1m
-ExecStart=/home/kenc/.config/borgmatic/local-backup
+# misc
+NoNewPrivileges=true
+ProtectHostname=true
+ProtectClock=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+#MemoryDenyWriteExecute=true
+
+# capabilities
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
