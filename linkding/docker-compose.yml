@@ -4,6 +4,7 @@ services:
   linkding:
     container_name: "${LD_CONTAINER_NAME:-linkding}"
     image: sissbruecker/linkding:1.8.5
+    user: 1000:1000
     #ports:
       #- "127.0.0.1:${LD_HOST_PORT:-9090}:9090"
     volumes:

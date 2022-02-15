@@ -2,7 +2,7 @@
 version: "3"
 services:
   syncthing:
-    image: lscr.io/linuxserver/syncthing:1.18.6
+    image: lscr.io/linuxserver/syncthing:1.19.0
     container_name: syncthing
     hostname: syncthing
     environment:

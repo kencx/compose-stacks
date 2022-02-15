@@ -5,6 +5,7 @@ services:
     container_name: miniflux_db
     image: postgres:latest
     env_file: miniflux.env
+    user: 1000:1000
     volumes:
       - ./miniflux-db:/var/lib/postgresql/data
     restart: unless-stopped
@@ -17,7 +18,7 @@ services:
 
   miniflux:
     container_name: "${MF_CONTAINER_NAME:-miniflux}"
-    image: miniflux/miniflux:2.0.34
+    image: miniflux/miniflux:2.0.35
     env_file: miniflux.env
     restart: unless-stopped
     #ports:
