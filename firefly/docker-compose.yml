@@ -1,36 +1,37 @@
-version: '3.3'
+---
+version: '3.6'
 
 services:
-  app:
-    container_name: firefly
-    image: fireflyiii/core:version-5.6.14
-    restart: unless-stopped
-    env_file: firefly.env
-    volumes:
-      - "${FIREFLY_DATA_DIR:-./data}:/var/www/html/storage/upload"
-    ports:
-      - "127.0.0.1:${FIREFLY_PORT:-8080}:8080"
-    depends_on:
-      - db
-    networks:
-      - firefly
-      - npm-reverseproxy
-
   db:
     container_name: fireflydb
-    image: mariadb    
+    image: mariadb
     restart: unless-stopped
-    env_file: fireflydb.env
-    user: 1000:1000
-    volumes:
-      - "${FIREFLY_DB_DIR:-./db}:/var/lib/mysql"
+    env_file: ${FIREFLY_DB_ENV_FILE:-fireflydb.env}
+    user: ${CUID:-1000}:${CGID:-1000}
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "--silent"]
       interval: 10s
       start_period: 30s
       retries: 5
+    volumes:
+      - "${FIREFLY_DB_DIR:-./db}:/var/lib/mysql"
     networks:
       - firefly
+
+  app:
+    container_name: firefly
+    image: fireflyiii/core:${FIREFLY_IMG_VER:-version-5.6.14}
+    restart: unless-stopped
+    env_file: ${FIREFLY_ENV_FILE:-firefly.env}
+    depends_on:
+      - db
+    volumes:
+      - "${FIREFLY_DATA_DIR:-./data}:/var/www/html/storage/upload"
+    # ports:
+    #   - "127.0.0.1:${FIREFLY_PORT:-8080}:8080"
+    networks:
+      - firefly
+      - npm-reverseproxy
 
 networks:
   firefly:

@@ -1,17 +1,18 @@
-version: '3'
+---
+version: '3.6'
 
 services:
   linkding:
-    container_name: "${LD_CONTAINER_NAME:-linkding}"
-    image: sissbruecker/linkding:1.8.5
-    user: 1000:1000
-    #ports:
-      #- "127.0.0.1:${LD_HOST_PORT:-9090}:9090"
-    volumes:
-      - "${LD_HOST_DATA_DIR:-./data}:/etc/linkding/data"
-    env_file:
-      - linkding.env
+    container_name: linkding
+    image: sissbruecker/linkding:${LINKDING_IMG_VER:-1.8.5}
+    user: ${CUID:-1000}:${CGID:-1000}
     restart: unless-stopped
+    env_file:
+      - ${LINKDING_ENV_FILE:-linkding.env}
+    volumes:
+      - "${LINKDING_DATA_DIR:-./data}:/etc/linkding/data"
+    # ports:
+    #   - "127.0.0.1:${LINKDING_PORT:-9090}:9090"
     networks:
       - npm-reverseproxy
 

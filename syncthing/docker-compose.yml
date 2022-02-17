@@ -1,22 +1,21 @@
 ---
-version: "3"
+version: "3.6"
 services:
   syncthing:
-    image: lscr.io/linuxserver/syncthing:1.19.0
     container_name: syncthing
-    hostname: syncthing
+    image: lscr.io/linuxserver/syncthing:${SYNCTHING_IMG_VER:-1.19.0}
+    restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Singapore
+      - PUID=${CUID:-1000}
+      - PGID=${CGID:-1000}
+      - TZ=${TZ:-Asia/Singapore}
     volumes:
       - "${SYNCTHING_CONFIG_DIR:-./config}:/config"
       - "${SYNCTHING_DATA_DIR:-./sync}:/data"
     ports:
-      #- 127.0.0.1:8384:8384
+      # - 127.0.0.1:8384:8384
       - 22000:22000/tcp
       - 21027:21027/udp
-    restart: unless-stopped
     networks:
       - npm-reverseproxy
 

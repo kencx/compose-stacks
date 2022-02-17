@@ -1,25 +1,26 @@
-version: "3"
+---
+version: "3.6"
 
 services:
-    drone-server:
-        image: drone/drone:latest
-        container_name: drone-server
-        restart: unless-stopped
-        env_file: drone.env
-        volumes:
-          - ./drone:/data
-        networks:
-          - npm-reverseproxy
+  drone-server:
+    container_name: drone-server
+    image: drone/drone:${DRONE_IMG_VER:-latest}
+    restart: unless-stopped
+    env_file: ${DRONE_ENV_FILE:-drone.env}
+    volumes:
+      - ${DRONE_DATA_DIR:-./drone}:/data
+    networks:
+      - npm-reverseproxy
 
-    drone-runner-docker:
-        image: drone/drone-runner-docker:1
-        container_name: drone-runner-docker
-        restart: unless-stopped
-        depends_on: 
-          - drone-server
-        env_file: drone.env
-        volumes:
-          - /var/run/docker.sock:/var/run/docker.sock
+  drone-runner-docker:
+    container_name: drone-runner-docker
+    image: drone/drone-runner-docker:1
+    restart: unless-stopped
+    depends_on:
+      - drone-server
+    env_file: drone.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   npm-reverseproxy:
