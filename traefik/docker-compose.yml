@@ -21,7 +21,7 @@ services:
       - ./traefik.yml:/traefik.yml:ro # config file
       - ./traefik.log:/traefik.log    # access log
       - ./acme/acme.json:/acme.json   # certificate resolver
-      # - ./rules:/rules  # file provider
+      - ./rules:/rules  # file provider
     networks:
       - proxy
 
@@ -43,6 +43,7 @@ services:
       - "traefik.http.routers.traefik-router.tls.domains[0].main=${DOMAIN_NAME}"
       - "traefik.http.routers.traefik-router.tls.domains[0].sans=*.${DOMAIN_NAME}"
       - "traefik.http.routers.traefik-router.service=api@internal"
+      - "traefik.http.routers.traefik-router.middlewares=chain-authelia@file"
 
 networks:
   proxy:

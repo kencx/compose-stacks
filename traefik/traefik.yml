@@ -4,7 +4,7 @@ global:
   sendAnonymousUsage: false
 
 api:
-  insecure: true
+  insecure: false
   dashboard: true
 
 log:
@@ -28,8 +28,8 @@ providers:
     exposedByDefault: false
     defaultRule: 'Host(`{{ index .Labels "com.docker.compose.service" }}.{{ env "DOMAIN_NAME"}}`)'
 
-  # file:
-    # directory: "/rules"
+  file:
+    directory: "/rules"
 
 certificatesResolvers:
   dns-dgo:
