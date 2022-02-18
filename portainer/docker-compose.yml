@@ -1,19 +1,24 @@
 ---
 version: '3.6'
-
 services:
   portainer:
-    container_name: portainer
     image: portainer/portainer-ce:${PORTAINER_IMG_VER:-2.11.1}
+    container_name: portainer
     restart: unless-stopped
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - "${PORTAINER_DATA_DIR:-./data}:/data"
-    # ports:
-    #   - "127.0.0.1:${PORTAINER_PORT:-9443}:9443"
     networks:
-      - npm-reverseproxy
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.portainer-proxy.entrypoints=https"
+      - "traefik.http.routers.portainer-proxy.rule=Host(`portainer.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.portainer-proxy.tls=true"
+      - "traefik.http.routers.portainer-proxy.service=portainer-service"
+      - "traefik.http.services.portainer-service.loadbalancer.server.port=${PORTAINER_PORT:-9000}"
 
 networks:
-  npm-reverseproxy:
+  proxy:
     external: true

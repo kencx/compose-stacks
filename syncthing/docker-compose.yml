@@ -6,19 +6,26 @@ services:
     image: lscr.io/linuxserver/syncthing:${SYNCTHING_IMG_VER:-1.19.0}
     restart: unless-stopped
     environment:
-      - PUID=${CUID:-1000}
-      - PGID=${CGID:-1000}
-      - TZ=${TZ:-Asia/Singapore}
+      - "PUID=${CUID:-1000}"
+      - "PGID=${CGID:-1000}"
+      - "TZ=${TZ:-Asia/Singapore}"
     volumes:
       - "${SYNCTHING_CONFIG_DIR:-./config}:/config"
       - "${SYNCTHING_DATA_DIR:-./sync}:/data"
     ports:
-      # - 127.0.0.1:8384:8384
-      - 22000:22000/tcp
-      - 21027:21027/udp
+      - 22000:22000/tcp  # listening port
+      - 21027:21027/udp  # protocol discovery
     networks:
-      - npm-reverseproxy
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.syncthing-proxy.entrypoints=https"
+      - "traefik.http.routers.syncthing-proxy.rule=Host(`syncthing.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.syncthing-proxy.tls=true"
+      - "traefik.http.routers.syncthing-proxy.service=syncthing-service"
+      - "traefik.http.services.syncthing-service.loadbalancer.server.port=${SYNCTHING_PORT:-8384}"
 
 networks:
-  npm-reverseproxy:
+  proxy:
     external: true

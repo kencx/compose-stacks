@@ -5,15 +5,15 @@ services:
   db:
     container_name: miniflux_db
     image: postgres:latest
-    user: ${CUID:-1000}:${CGID:-1000}
+    user: "${CUID:-1000}:${CGID:-1000}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "miniflux"]
       interval: 10s
       start_period: 30s
-    env_file: ${MINIFLUX_DB_ENV_FILE:-miniflux.env}
+    env_file: "${MINIFLUX_DB_ENV_FILE:-miniflux.env}"
     volumes:
-      - ${MINIFLUX_DB_DIR:-./miniflux-db}:/var/lib/postgresql/data
+      - "${MINIFLUX_DB_DIR:-./miniflux-db}:/var/lib/postgresql/data"
     networks:
       - miniflux
 
@@ -30,18 +30,26 @@ services:
     env_file:
       - "${MINIFLUX_ENV_FILE:-./miniflux.env}"
     environment:
-      - PORT=8120
+      - PORT=8120  # TODO: fix format error with variable substitution
       - DEBUG=1
       - RUN_MIGRATIONs=1
       - CREATE_ADMIN=1
-    # ports:
-    #  - "127.0.0.1:${MF_PORT:-8120}:8120"
     networks:
       - miniflux
-      - npm-reverseproxy
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.miniflux-proxy.entrypoints=https"
+      - "traefik.http.routers.miniflux-proxy.rule=Host(`miniflux.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.miniflux-proxy.tls=true"
+#      - "traefik.http.routers.miniflux-proxy.tls.certresolver=dns-dgo"
+      - "traefik.http.routers.miniflux-proxy.service=miniflux-service"
+      - "traefik.http.services.miniflux-service.loadbalancer.server.port=${MINIFLUX_PORT:-8120}"
+#      - "traefik.http.services.miniflux-service.loadbalancer.server.scheme=https"
 
 networks:
   miniflux:
     name: miniflux
-  npm-reverseproxy:
+  proxy:
     external: true

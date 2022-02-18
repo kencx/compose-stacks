@@ -1,0 +1,25 @@
+---
+# replace all instances of [name] with service
+version: '3.6'
+services:
+  [name]:
+    container_name:
+    image:
+    user: "${CUID:-1000}:${CGID:-1000}"
+    restart: unless-stopped
+    env_file:
+    volumes:
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.[name]-proxy.entrypoints=https"
+      - "traefik.http.routers.[name]-proxy.rule=Host(`[name].${DOMAIN_NAME}`)"
+      - "traefik.http.routers.[name]-proxy.tls=true"
+      - "traefik.http.routers.[name]-proxy.service=[name]-service"
+      - "traefik.http.services.[name]-service.loadbalancer.server.port=[port]"
+
+networks:
+  proxy:
+    external: true
