@@ -26,7 +26,7 @@ entrypoints:
 providers:
   docker:
     network: "proxy"  # docker network name
-    endpoint: "unix:///var/run/docker.sock"
+    endpoint: "tcp://socket-proxy:2375"
     exposedByDefault: false
     defaultRule: 'Host(`{{ index .Labels "com.docker.compose.service" }}.{{ env "DOMAIN_NAME"}}`)'
 

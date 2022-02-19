@@ -4,11 +4,13 @@ version: '3.6'
 services:
   reverse-proxy:
     container_name: traefik
-    image: traefik:${TRAEFIK_IMG_VER:-latest}
+    image: traefik:${TRAEFIK_IMG_VER:-v2.6.1}
     restart: unless-stopped
     # user: ${CUID:-1000}:${CGID:-1000}
     security_opt:
       - no-new-privileges:true
+    depends_on:
+      - socket-proxy
     healthcheck:
       test: ["CMD", "traefik", "healthcheck"]
       interval: 30s
@@ -21,13 +23,13 @@ services:
       - "443:443"
       - "${TRAEFIK_WEB_PORT:-8085}:8085"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/traefik.yml:ro # config file
       - ./traefik.log:/traefik.log    # access log
       - ./acme/acme.json:/acme.json   # certificate resolver
       - ./rules:/rules  # file provider
     networks:
       - proxy
+      - socket-proxy
 
     labels:
       - "traefik.enable=true"
@@ -49,8 +51,31 @@ services:
       - "traefik.http.routers.traefik-router.service=api@internal"
       - "traefik.http.routers.traefik-router.middlewares=chain-authelia@file"
 
+  socket-proxy:
+    container_name: socket-proxy
+    image: tecnativa/docker-socket-proxy:0.1.1
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - LOG_LEVEL=info
+      # for traefik
+      - CONTAINERS=1
+      # for portainer
+      - IMAGES=1
+      - INFO=1
+      - NETWORKS=1
+      - SERVICES=1
+      - TASKS=1
+      - VOLUMES=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - socket-proxy
+
 networks:
   proxy:
+    external: true
+  socket-proxy:
     external: true
   default:
     driver: bridge
