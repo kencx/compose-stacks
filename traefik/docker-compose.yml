@@ -9,6 +9,10 @@ services:
     # user: ${CUID:-1000}:${CGID:-1000}
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 30s
+      start_period: 30s
     env_file: traefik.env
     environment:
       - TZ=${TZ:-Asia/Singapore}

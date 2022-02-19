@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "miniflux"]
-      interval: 10s
+      interval: 120s
       start_period: 30s
     env_file: "${MINIFLUX_DB_ENV_FILE:-miniflux.env}"
     volumes:
@@ -23,7 +23,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
-      interval: 60s
+      interval: 120s
       start_period: 30s
     depends_on:
       - db
@@ -46,7 +46,6 @@ services:
 #      - "traefik.http.routers.miniflux-proxy.tls.certresolver=dns-dgo"
       - "traefik.http.routers.miniflux-proxy.service=miniflux-service"
       - "traefik.http.services.miniflux-service.loadbalancer.server.port=${MINIFLUX_PORT:-8120}"
-#      - "traefik.http.services.miniflux-service.loadbalancer.server.scheme=https"
 
 networks:
   miniflux:

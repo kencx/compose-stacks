@@ -3,7 +3,7 @@ version: '3.6'
 services:
   authelia:
     container_name: authelia
-    image: authelia/authelia:4.33
+    image: authelia/authelia:${AUTHELIA_IMG_VER:-4.33}
     user: "${CUID:-1000}:${CGID:-1000}"
     restart: unless-stopped
     environment:

@@ -37,6 +37,7 @@ services:
       - "traefik.http.routers.firefly-proxy.tls=true"
       - "traefik.http.routers.firefly-proxy.service=firefly-service"
       - "traefik.http.services.firefly-service.loadbalancer.server.port=${FIRFLY_PORT:-8080}"
+      - "traefik.http.routers.firefly-proxy.middlewares=chain-authelia@file"
 
 networks:
   firefly:

@@ -25,6 +25,7 @@ services:
       - "traefik.http.routers.syncthing-proxy.tls=true"
       - "traefik.http.routers.syncthing-proxy.service=syncthing-service"
       - "traefik.http.services.syncthing-service.loadbalancer.server.port=${SYNCTHING_PORT:-8384}"
+      - "traefik.http.routers.syncthing-proxy.middlewares=chain-authelia@file"
 
 networks:
   proxy:

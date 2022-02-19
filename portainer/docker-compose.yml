@@ -18,7 +18,7 @@ services:
       - "traefik.http.routers.portainer-proxy.tls=true"
       - "traefik.http.routers.portainer-proxy.service=portainer-service"
       - "traefik.http.services.portainer-service.loadbalancer.server.port=${PORTAINER_PORT:-9000}"
-      # - "traefik.http.routers.portainer-proxy.middlewares=chain-authelia@file"
+      - "traefik.http.routers.portainer-proxy.middlewares=chain-authelia@file"
 
 networks:
   proxy:

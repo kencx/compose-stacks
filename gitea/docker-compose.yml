@@ -17,8 +17,8 @@ services:
       # - 3000:3000
       - 2222:22
     networks:
-      - npm-reverseproxy
+      - proxy
 
 networks:
-  npm-reverseproxy:
+  proxy:
     external: true

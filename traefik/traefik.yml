@@ -7,6 +7,8 @@ api:
   insecure: false
   dashboard: true
 
+ping: {}
+
 log:
   level: "DEBUG"
 
