@@ -19,6 +19,7 @@ services:
       - "traefik.http.routers.[name]-proxy.tls=true"
       - "traefik.http.routers.[name]-proxy.service=[name]-service"
       - "traefik.http.services.[name]-service.loadbalancer.server.port=[port]"
+      - "traefik.http.routers.[name]-router.middlewares=chain-authelia@file"
 
 networks:
   proxy:

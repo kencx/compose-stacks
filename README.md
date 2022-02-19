@@ -4,7 +4,7 @@ Repository of docker-compose .yaml files of my self-hosted applications and serv
 
 ## Use
 
-#### Docker network
+### Docker network
 Most of the services use nginx-proxy-manager as a reverse proxy. This requires
 the creation of an external docker network **prior** to starting any containers.
 
@@ -14,26 +14,26 @@ As for as I know, there is no easy way of creating an external network
 Ensure the network is created with:
 
 ```bash
-$ docker network create npm-reverseproxy
+$ docker network create proxy
 ```
 
 The network name matches that of all compose files. This cannot be configured
 with `.env` as environment variables cannot be passed into yaml keys.
 
-#### Environment Variables
+### Environment Variables
 Rename `.env.example` to `.env` in the root directory. This is the global
 configuration file for all containers.
 
 Each sub-directory contains a base `docker-compose.yml` file and relevant
 `[service].env` file for container specific configuration.
 
-Change the env vars in each `*.env` to your liking. To debug your config, run
+Change the env vars in each `[service].env` to your liking. To debug your config, run
 
 ```bash
 $ docker-compose --env-file=../.env config
 ```
 
-When starting a service, run into the sub-directory.
+When starting a service, `cd` into the sub-directory.
 
 ```bash
 $ docker-compose --env-file=../.env up -d
