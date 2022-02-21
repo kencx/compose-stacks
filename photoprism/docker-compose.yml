@@ -1,98 +1,50 @@
 version: '3.5'
 
-# Note:
-# - You have to boot your Raspberry Pi 3/4 with the parameter "arm_64bit=1" in config.txt to use our ARM64 (64-bit) image.
-#   An "exec format error" will occur otherwise.
-# - Use https://dl.photoprism.org/docker/armv7/docker-compose.yml for running PhotoPrism on ARMv7-based (32-bit) devices.
-# - Running PhotoPrism on a server with less than 4 GB of swap space or setting a memory/swap limit can cause unexpected
-#   restarts ("crashes"), especially when the indexer temporarily needs more memory to process large files.
-# - If you see Docker errors related to "cgroups", it may help to add the following to /boot/firmware/cmdline.txt:
-#   cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1
-# - If you install PhotoPrism on a public server outside your home network, please always run it behind a secure
-#   HTTPS reverse proxy such as Traefik, Caddy, or NGINX. Your files and passwords will otherwise be transmitted
-#   in clear text and can be intercepted by anyone, including your provider, hackers, and governments.
-#
-# Documentation : https://docs.photoprism.org/getting-started/raspberry-pi/
-# Docker Hub URL: https://hub.docker.com/r/photoprism/photoprism/
-#
-# DOCKER COMPOSE COMMAND REFERENCE
-# --------------------------------------------------------------------------
-# Start    | docker-compose up -d
-# Stop     | docker-compose stop
-# Update   | docker-compose pull
-# Logs     | docker-compose logs --tail=25 -f
-# Terminal | docker-compose exec photoprism bash
-# Help     | docker-compose exec photoprism photoprism help
-# Config   | docker-compose exec photoprism photoprism config
-# Reset    | docker-compose exec photoprism photoprism reset
-# Backup   | docker-compose exec photoprism photoprism backup -a -i
-# Restore  | docker-compose exec photoprism photoprism restore -a -i
-# Index    | docker-compose exec photoprism photoprism index
-# Reindex  | docker-compose exec photoprism photoprism index -f
-# Import   | docker-compose exec photoprism photoprism import
-#
-# To search originals for faces without a complete rescan:
-# docker-compose exec photoprism photoprism faces index
-
 services:
-  photoprism:
-    ## photoprism/photoprism-arm64 has been replaced by a single multi-arch image for AMD64,
-    ## ARM64, and ARMv7. Use photoprism/photoprism:preview for testing preview builds or
-    ## photoprism/photoprism:latest for the stable release:
-    image: photoprism/photoprism:latest
-    depends_on:
-      - mariadb
-    ## Only enable automatic restarts once your installation is properly
-    ## configured as it otherwise may get stuck in a restart loop,
-    ## see https://docs.photoprism.org/getting-started/faq/#why-is-photoprism-getting-stuck-in-a-restart-loop
-    restart: unless-stopped
-    security_opt:
-      - seccomp:unconfined
-      - apparmor:unconfined
-    ## Run as a specific, non-root user (see https://docs.docker.com/engine/reference/run/#user):
-    user: "1000:1000"
-    ports:
-      - "${PHOTOPRISM_PORT:-2342}:2342" # HTTP port (host:container)
-    env_file:
-      - "photoprism.env"
-    ## Hardware devices for video transcoding and machine learning (optional):
-    # devices:
-    #  - "/dev/video11:/dev/video11" # Video4Linux (h264_v4l2m2m)
-    working_dir: "/photoprism"
-    volumes:
-      ## The *originals* folder contains your original photo and video files (- "[host folder]:/photoprism/originals"):
-      - "${PHOTOPRISM_PICTURES_DIR:-~/pictures}:/photoprism/originals"
-      ## Multiple folders can be made accessible by mounting them as subfolders of /photoprism/originals:
-      # - "/mnt/Family:/photoprism/originals/Family"    # [folder 1]:/photoprism/originals/[folder 1]
-      # - "/mnt/Friends:/photoprism/originals/Friends"  # [folder 2]:/photoprism/originals/[folder 2]
-      ## You may mount an *import* folder from which files can be transferred to *originals* (optional):
-      # - "~/Import:/photoprism/import"
-      ## Cache, session, thumbnail, and sidecar files will be created in the *storage* folder (never remove):
-      - "${PHOTOPRISM_STORAGE_DIR:-./storage}:/photoprism/storage"
-    networks:
-      - photoprism
-      - npm-reverseproxy
-
-  ## see https://docs.photoprism.org/getting-started/faq/#should-i-use-sqlite-mariadb-or-mysql
-  mariadb:
-    restart: unless-stopped
+  photoprismdb:
     image: arm64v8/mariadb:10.6 # this mariadb image runs on ARM64-based devices only
+    container_name: photoprismdb
+    restart: unless-stopped
     security_opt:
       - seccomp:unconfined
       - apparmor:unconfined
     command: mysqld --innodb-buffer-pool-size=128M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
+    env_file: "${PHOTOPRISMDB_ENV_FILE:-photoprismdb.env}"
     volumes:
-      - "${PHOTOPRISM_DB_DIR:-./database}:/var/lib/mysql" 
-    environment:
-      MYSQL_ROOT_PASSWORD: insecure
-      MYSQL_DATABASE: photoprism
-      MYSQL_USER: photoprism
-      MYSQL_PASSWORD: insecure
+      - "${PHOTOPRISM_DB_DIR:-./database}:/var/lib/mysql"
     networks:
       - photoprism
+
+  photoprism:
+    container_name: photoprism
+    image: photoprism/photoprism:${PHOTOPRISM_IMG_VER:-20220121}
+    restart: unless-stopped
+    depends_on:
+      - photoprismdb
+    security_opt:
+      - seccomp:unconfined
+      - apparmor:unconfined
+    user: "${CUID:-1000}:${CGID:-1000}"
+    env_file: "${PHOTOPRISM_ENV_FILE:-photoprism.env}"
+    working_dir: "/photoprism"
+    volumes:
+      - "${PHOTOPRISM_PICS_DIR:-~/pictures}:/photoprism/originals"
+      - "${PHOTOPRISM_STORAGE_DIR:-./storage}:/photoprism/storage"
+    networks:
+      - photoprism
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.photoprism-proxy.entrypoints=https"
+      - "traefik.http.routers.photoprism-proxy.rule=Host(`photos.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.photoprism-proxy.tls=true"
+      - "traefik.http.routers.photoprism-proxy.service=photoprism-service"
+      - "traefik.http.services.photoprism-service.loadbalancer.server.port=${PHOTOPRISM_PORT:-2342}"
+      - "traefik.http.routers.photoprism-router.middlewares=chain-authelia@file"
 
 networks:
   photoprism:
     name: photoprism
-  npm-reverseproxy:
+  proxy:
     external: true
