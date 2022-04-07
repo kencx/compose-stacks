@@ -15,3 +15,5 @@ stack
 # include all docker-compose files
 !*/*.yml
 !*/*.env.example
+
+!traefik/rules-example/*.yml

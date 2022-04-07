@@ -1,0 +1,53 @@
+http:
+  routers:
+    proxmox-https:
+      entryPoints:
+        - https
+      rule: "Host(``)"
+      tls: {}
+      middlewares:
+        - default-headers
+      service: proxmox
+
+    pihole:
+      entryPoints:
+        - https
+      rule: "Host(``)"
+      tls: {}
+      middlewares:
+        - default-headers
+        - addprefix-pihole
+      service: pihole
+
+  services:
+    proxmox:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: ""
+        passHostHeader: true
+
+    pihole:
+      loadBalancer:
+        servers:
+          - url: ""
+        passHostHeader: true
+
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
+
+  middlewares:
+    addprefix-pihole:
+      addPrefix:
+        prefix: "/admin"
+
+    default-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true

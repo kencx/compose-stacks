@@ -1,0 +1,14 @@
+http:
+  middlewares:
+    middlewares-authelia:
+      forwardAuth:
+        address: "http://authelia:9091/api/verify?rd=https://[url]"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "Remote-User"
+          - "Remote-Groups"
+
+    chain-authelia:
+      chain:
+        middlewares:
+          - middlewares-authelia
