@@ -15,6 +15,7 @@ Ensure the network is created with:
 
 ```bash
 $ docker network create proxy
+$ docker network create socket-proxy
 ```
 
 The network name matches that of all compose files. This cannot be configured
@@ -24,19 +25,37 @@ with `.env` as environment variables cannot be passed into yaml keys.
 Rename `.env.example` to `.env` in the root directory. This is the global
 configuration file for all containers.
 
+```bash
+$ cp .env.example .env
+```
+
 Each sub-directory contains a base `docker-compose.yml` file and relevant
 `[service].env` file for container specific configuration.
 
-Change the env vars in each `[service].env` to your liking. To debug your config, run
+Change the env vars in each `[service].env` to your liking.
+
+### Plan, Start, Stop
+To perform a plan
+for a container, run the following in the root directory:
 
 ```bash
-$ docker-compose --env-file=../.env config
+$ make plan c=[service]
 ```
 
-When starting a service, `cd` into the sub-directory.
+This saves the config plan to the `stack` file for your reference. Once you're
+happy, start and stop the container with:
 
 ```bash
-$ docker-compose --env-file=../.env up -d
+$ make start c=[service]
+$ make stop c=[service]
+```
+
+### Add Service
+A docker-compose template file is available to quickly add a new service:
+
+```bash
+$ mkdir [service]
+$ cp docker-compose.template.yml [service]/docker-compose.yml
 ```
 
 ## Borgmatic
@@ -48,6 +67,5 @@ To use, create a new user `borg` and place the following files in these director
 - `remote.yaml` in `/home/borg/`
 
 ## TODO
-- Shell script for compose commands
 - Secrets management
 - Overrides compose files for different envs
