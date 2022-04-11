@@ -4,7 +4,8 @@ services:
   linkding:
     container_name: linkding
     image: sissbruecker/linkding:${LINKDING_IMG_VER:-1.8.5}
-    user: "${CUID:-1000}:${CGID:-1000}"
+    # non-root user messes up db permissions in image
+    # user: "${CUID:-1000}:${CGID:-1000}"
     restart: unless-stopped
     env_file:
       - "${LINKDING_ENV_FILE:-linkding.env}"
