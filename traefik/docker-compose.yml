@@ -49,7 +49,7 @@ services:
       - "traefik.http.routers.traefik-router.tls.domains[0].main=${DOMAIN_NAME}"
       - "traefik.http.routers.traefik-router.tls.domains[0].sans=*.${DOMAIN_NAME}"
       - "traefik.http.routers.traefik-router.service=api@internal"
-      - "traefik.http.routers.traefik-router.middlewares=chain-authelia@file"
+      # - "traefik.http.routers.traefik-router.middlewares=chain-authelia@file"
 
   socket-proxy:
     container_name: socket-proxy

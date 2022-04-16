@@ -21,6 +21,8 @@ services:
     container_name: firefly
     image: fireflyiii/core:${FIREFLY_IMG_VER:-version-5.6.14}
     restart: unless-stopped
+    environment:
+      - TZ=${TZ}
     env_file: "${FIREFLY_ENV_FILE:-firefly.env}"
     depends_on:
       - db
@@ -37,7 +39,7 @@ services:
       - "traefik.http.routers.firefly-proxy.tls=true"
       - "traefik.http.routers.firefly-proxy.service=firefly-service"
       - "traefik.http.services.firefly-service.loadbalancer.server.port=${FIRFLY_PORT:-8080}"
-      - "traefik.http.routers.firefly-proxy.middlewares=chain-authelia@file"
+      # - "traefik.http.routers.firefly-proxy.middlewares=chain-authelia@file"
 
 networks:
   firefly:
