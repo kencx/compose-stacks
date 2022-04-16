@@ -1,11 +1,19 @@
-.PHONY: plan start stop
+.PHONY: plan up recreate logs $(cmd)
 
 plan: .env
 	@cd "$(c)" && docker-compose --env-file=../.env config > ../stack && \
 		echo "Config for $(c) written to file stack"
 
-start: .env
+logs:
+	docker logs -f "$(c)"
+
+up: .env
 	cd "$(c)" && docker-compose --env-file=../.env up -d
 
-stop: .env
-	cd "$(c)" && docker-compose --env-file=../.env down
+recreate: .env
+	cd "$(c)" && docker-compose --env-file=../.env up -d --force-recreate
+
+cmd = down pull
+$(cmd): .env
+	cd "$(c)" && docker-compose --env-file=../.env $@
+
