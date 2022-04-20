@@ -10,7 +10,16 @@ services:
     volumes:
       - ${DRONE_DATA_DIR:-./drone}:/data
     networks:
-      - npm-reverseproxy
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.drone-proxy.entrypoints=https"
+      - "traefik.http.routers.drone-proxy.rule=Host(`drone.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.drone-proxy.tls=true"
+      - "traefik.http.routers.drone-proxy.service=drone-service"
+      - "traefik.http.services.drone-service.loadbalancer.server.port=80"
+      # - "traefik.http.routers.drone-router.middlewares=chain-authelia@file"
 
   drone-runner-docker:
     container_name: drone-runner-docker
@@ -23,5 +32,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
-  npm-reverseproxy:
+  proxy:
     external: true
