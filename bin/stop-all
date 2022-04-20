@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# stop all compose services
+
+EXCLUDE=".*(photoprism|borgmatic|drone|gitea|nginx-proxy-manager).*"
+
+for d in ./*/docker-compose.yml; do
+  [[ $d =~ $EXCLUDE ]] && continue
+  docker-compose down
+done
+
