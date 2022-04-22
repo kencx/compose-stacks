@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# start all compose services
+
+EXCLUDE=".*(photoprism|borgmatic|drone|gitea|paperless-ng|nginx-proxy-manager).*"
+
+for d in ./*/docker-compose.yml; do
+  [[ $d =~ $EXCLUDE ]] && continue
+  docker-compose --env-file=.env -f $d config >> stack
+  docker-compose --env-file=.env -f $d up -d
+done
+

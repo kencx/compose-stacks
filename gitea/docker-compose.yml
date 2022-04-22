@@ -18,6 +18,14 @@ services:
       - 2222:22
     networks:
       - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.gitea-proxy.entrypoints=https"
+      - "traefik.http.routers.gitea-proxy.rule=Host(`git.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.gitea-proxy.tls=true"
+      - "traefik.http.routers.gitea-proxy.service=gitea-service"
+      - "traefik.http.services.gitea-service.loadbalancer.server.port=3000"
 
 networks:
   proxy:
