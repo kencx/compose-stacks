@@ -2,7 +2,7 @@ version: '3.6'
 services:
   calibre-web:
     container_name: calibre-web
-    image: "lscr.io/linuxserver/calibre-web:${CALIBRE_WEB_IMG_VER:-arm64v8-0.6.15}"
+    image: "lscr.io/linuxserver/calibre-web:${CALIBRE_WEB_IMG_VER:-amd64-0.6.18}"
     restart: unless-stopped
     environment:
       - PUID=${CUID:-1000}
