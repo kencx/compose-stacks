@@ -19,7 +19,7 @@ services:
 
   miniflux:
     container_name: "miniflux"
-    image: miniflux/miniflux:${MINIFLUX_IMG_VER:-2.0.35}
+    image: miniflux/miniflux:${MINIFLUX_IMG_VER:-2.0.36}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]

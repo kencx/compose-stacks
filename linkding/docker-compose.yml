@@ -3,7 +3,7 @@ version: '3.6'
 services:
   linkding:
     container_name: linkding
-    image: sissbruecker/linkding:${LINKDING_IMG_VER:-1.8.5}
+    image: sissbruecker/linkding:${LINKDING_IMG_VER:-1.11.0}
     # non-root user messes up db permissions in image
     # user: "${CUID:-1000}:${CGID:-1000}"
     restart: unless-stopped

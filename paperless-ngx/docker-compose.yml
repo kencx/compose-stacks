@@ -9,7 +9,7 @@ services:
       - paperless
 
   paperless-ng:
-    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_IMG_VER:-1.6.0}
+    image: ghcr.io/paperless-ngx/paperless-ngx:${PAPERLESS_IMG_VER:-1.7.1}
     container_name: paperless-ngx
     restart: unless-stopped
     depends_on:
@@ -26,6 +26,7 @@ services:
       - USERMAP_GID=${CGID:-1000}
       - PAPERLESS_TIME_ZONE=${TZ:-Asia/Singapore}
       - PAPERLESS_REDIS=redis://paperless-redis:6379
+      - PAPERLESS_URL=https://paper.${DOMAIN_NAME}
     volumes:
       - "${PAPERLESS_DATA_DIR:-./data}:/usr/src/paperless/data"
       - "${PAPERLESS_CONSUME_DIR:-./consume}:/usr/src/paperless/consume"
