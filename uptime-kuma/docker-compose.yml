@@ -1,0 +1,28 @@
+---
+# replace all instances of uptime-kuma with service
+version: '3.6'
+services:
+  uptime-kuma:
+    container_name: uptime-kuma
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data:/app/data
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.uptime-kuma-proxy.entrypoints=https"
+      - "traefik.http.routers.uptime-kuma-proxy.rule=Host(`uptime.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.uptime-kuma-proxy.tls=true"
+      - "traefik.http.routers.uptime-kuma-proxy.service=uptime-kuma-service"
+      - "traefik.http.services.uptime-kuma-service.loadbalancer.server.port=3001"
+      - "traefik.http.routers.uptime-kuma-router.middlewares=chain-authelia@file"
+
+networks:
+  proxy:
+    external: true
