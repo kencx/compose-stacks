@@ -1,6 +1,6 @@
 # Compose Stacks
 
-This is a repository of my `docker-compose.yaml` files for various self-hosted applications.
+This is a repository of `docker-compose.yaml` files for various self-hosted applications.
 They include:
 - Traefik + [Socket Proxy](https://github.com/Tecnativa/docker-socket-proxy)
 - Authelia
@@ -11,16 +11,12 @@ They include:
 - Linkding
 - Miniflux
 - Calibre-Web
+- Calibre
 - Firefly III
 - Pihole
 - Gitea
 - Drone CI
 - Nginx Proxy Manager (deprecated)
-- and an extra Borgmatic configuration (not run in docker)
-
-## TODO
-- [ ] Secrets management with SOPS
-- [ ] Overrides compose files for different env
 
 ## Usage
 
@@ -38,8 +34,8 @@ $ docker network create proxy          # for traefik
 $ docker network create socket-proxy   # for socket-proxy
 ```
 
-The network name `proxy` and `socket-proxy` is used in all compose files. If you 
-wish to change it, ensure all occurences are replaced manually. Sadly, this cannot 
+The network name `proxy` and `socket-proxy` is used in all compose files. If you
+wish to change it, ensure all occurrences are replaced manually. Sadly, this cannot
 be configured with `.env` as environment variables cannot be passed into yaml keys.
 
 ### Environment Variables
@@ -84,19 +80,11 @@ $ mkdir [service]
 $ cp docker-compose.template.yml [service]/docker-compose.yml
 ```
 
-## Borgmatic Backups
-Borgmatic scripts, config and systemd files are located in `./borgmatic`.
-
-To use, create a new user `borg` and place the following files in these directories:
-- `borgmatic.service`, `borgmatic.timer` in `/etc/systemd/system`
-- `remote-backup` in `/usr/local/sbin`
-- `remote.yaml` in `/home/borg/`
-
 ## Other
 #### sync.sh
-`sync.sh` synchronizes my `.env` and `.env.example` file. When adding env variables
+`sync.sh` synchronizes `.env` and `.env.example` file. When adding env variables
 to `.env`, I often forget or lose track of which env variables are missing in `.env.example`.
-Hence, this script automatically sychronizes them with `diff` and `patch`.
+Hence, this script automatically synchronizes them with `diff` and `patch`.
 
 Its not great but it works ok so far :)
 

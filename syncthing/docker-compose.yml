@@ -3,7 +3,7 @@ version: "3.6"
 services:
   syncthing:
     container_name: syncthing
-    image: lscr.io/linuxserver/syncthing:${SYNCTHING_IMG_VER:-1.19.0}
+    image: lscr.io/linuxserver/syncthing:${SYNCTHING_IMG_VER:-1.23.1}
     restart: unless-stopped
     environment:
       - "PUID=${CUID:-1000}"
