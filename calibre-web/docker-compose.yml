@@ -2,7 +2,7 @@ version: '3.6'
 services:
   calibre-web:
     container_name: calibre-web
-    image: "lscr.io/linuxserver/calibre-web:${CALIBRE_WEB_IMG_VER:-amd64-0.6.18}"
+    image: "lscr.io/linuxserver/calibre-web:${CALIBRE_WEB_IMG_VER:-amd64-0.6.19}"
     restart: unless-stopped
     environment:
       - PUID=${CUID:-1000}
@@ -19,7 +19,6 @@ services:
       - "traefik.http.routers.calibre-proxy.entrypoints=https"
       - "traefik.http.routers.calibre-proxy.rule=Host(`books.${DOMAIN_NAME}`)"
       - "traefik.http.routers.calibre-proxy.tls=true"
-#      - "traefik.http.routers.calibre-proxy.tls.certresolver=dns-dgo"
       - "traefik.http.routers.calibre-proxy.service=calibre-service"
       - "traefik.http.services.calibre-service.loadbalancer.server.port=${CALIBRE_WEB_PORT:-8083}"
 

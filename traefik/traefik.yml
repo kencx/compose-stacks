@@ -41,5 +41,6 @@ certificatesResolvers:
 #      caServer: '{{ env "CA_SERVER"}}'
       dnsChallenge:
         provider: digitalocean
+        delayBeforeCheck: 90
         resolvers: "1.1.1.1:53,1.0.0.1:53"
 

@@ -38,14 +38,13 @@ services:
       - miniflux
       - proxy
     labels:
-     - "traefik.enable=true"
-     - "traefik.docker.network=proxy"
-     - "traefik.http.routers.miniflux-proxy.entrypoints=https"
-     - "traefik.http.routers.miniflux-proxy.rule=Host(`miniflux.${DOMAIN_NAME}`)"
-     - "traefik.http.routers.miniflux-proxy.tls=true"
-#     - "traefik.http.routers.miniflux-proxy.tls.certresolver=dns-dgo"
-     - "traefik.http.routers.miniflux-proxy.service=miniflux-service"
-     - "traefik.http.services.miniflux-service.loadbalancer.server.port=${MINIFLUX_PORT:-8120}"
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.miniflux-proxy.entrypoints=https"
+      - "traefik.http.routers.miniflux-proxy.rule=Host(`miniflux.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.miniflux-proxy.tls=true"
+      - "traefik.http.routers.miniflux-proxy.service=miniflux-service"
+      - "traefik.http.services.miniflux-service.loadbalancer.server.port=${MINIFLUX_PORT:-8120}"
 
 networks:
   miniflux:

@@ -1,0 +1,16 @@
+---
+version: "3"
+services:
+  actual:
+    container_name: actual
+    image: ghcr.io/actualbudget/actual-server:23.4.1-alpine
+    ports:
+      - "5006:5006"
+    environment:
+      - userFilesPath=./user-files
+      - serverFilesPath=./server-files
+      - externalPort=5006
+    volumes:
+      - ./server-files:/app/server-files
+      - ./user-files:/app/user-files
+    restart: unless-stopped

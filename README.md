@@ -7,7 +7,7 @@ They include:
 - Portainer
 - Syncthing
 - Photoprism
-- Paperless-Ng
+- Paperless-Ngx
 - Linkding
 - Miniflux
 - Calibre-Web
@@ -16,7 +16,11 @@ They include:
 - Pihole
 - Gitea
 - Drone CI
-- Nginx Proxy Manager (deprecated)
+- Nginx Proxy Manager
+- Actual
+- Uptime-Kuma
+- Registry
+- pgadmin
 
 ## Usage
 
@@ -37,62 +41,3 @@ $ docker network create socket-proxy   # for socket-proxy
 The network name `proxy` and `socket-proxy` is used in all compose files. If you
 wish to change it, ensure all occurrences are replaced manually. Sadly, this cannot
 be configured with `.env` as environment variables cannot be passed into yaml keys.
-
-### Environment Variables
-Copy `.env` from `.env.example` in the base directory. This is the global
-configuration file for all containers.
-
-```bash
-$ cp .env.example .env
-```
-
-Each sub-directory contains a base `docker-compose.yml` file and a relevant
-`[service].env` file for *container-specific* configuration.
-
-Change the env vars in each `[service].env` to your liking. Refer to each service's
-documentation for more details.
-
-### Docker-Compose Commands
-There are 3 custom commands for executing docker-compose actions:
-- plan: Generates a `docker-compose config` in the file `stack`
-- start: Start the given service
-- stop: Stop the given service
-
-To perform a plan for a container, run the following in the base directory:
-
-```bash
-$ make plan c=[service]
-```
-
-This saves the config plan to the file `stack` for your reference. Once you're
-happy, start and stop the container with:
-
-```bash
-$ make start c=[service]
-$ make stop c=[service]
-```
-
-### Add Service
-A `docker-compose.yml` template file is available to quickly add a new service:
-
-```bash
-$ mkdir [service]
-$ cp docker-compose.template.yml [service]/docker-compose.yml
-```
-
-## Other
-#### sync.sh
-`sync.sh` synchronizes `.env` and `.env.example` file. When adding env variables
-to `.env`, I often forget or lose track of which env variables are missing in `.env.example`.
-Hence, this script automatically synchronizes them with `diff` and `patch`.
-
-Its not great but it works ok so far :)
-
-#### Manual execution
-To manually execute compose commands inside the sub-directories, you need to add the
-`--env-file` flag to ensure all env variables in `.env` are populated
-
-```bash
-$ cd traefik
-$ docker-compose --env-file=../.env up -d
-```

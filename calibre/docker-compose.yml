@@ -2,7 +2,7 @@
 version: "3.6"
 services:
   calibre:
-    image: lscr.io/linuxserver/calibre:6.13.0
+    image: lscr.io/linuxserver/calibre:6.17.0
     container_name: calibre
     environment:
       - PUID=1000
@@ -10,7 +10,7 @@ services:
       - TZ=Asia/Singapore
     volumes:
       - ./config:/config
-      - ~/syncthing/sync/library:/library
+      - ~/syncthing/sync/books:/library
       - ./import:/import
     ports:
       - 8080:8080
