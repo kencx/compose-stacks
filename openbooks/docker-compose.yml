@@ -1,0 +1,14 @@
+---
+version: "3.6"
+services:
+  openbooks:
+    container_name: openbooks
+    image: evanbuss/openbooks:4.5.0
+    command: --persist --name changeme
+    environment:
+      - BASE_PATH=/openbooks/
+    ports:
+      - "8080:80"
+    volumes:
+      - "./data:/books"
+    restart: unless-stopped
