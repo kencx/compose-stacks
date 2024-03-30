@@ -1,0 +1,20 @@
+---
+services:
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent:4.6.4
+    container_name: qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Singapore
+      - WEBUI_PORT=6011
+      - TORRENTING_PORT=6881
+      - DOCKER_MODS=ghcr.io/gabe565/linuxserver-mod-vuetorrent
+    volumes:
+      - ./config:/config
+      - ./torrents:/downloads
+    ports:
+      - 6081:6881
+      - 6081:6881/udp
+      - 6011:6011
