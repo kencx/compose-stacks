@@ -1,0 +1,54 @@
+---
+version: "3"
+services:
+  lldap:
+    container_name: lldap
+    image: "ghcr.io/lldap/lldap:2024-04-01-alpine"
+    ports:
+      - 3890:3890
+      - 17170:17170
+    environment:
+      - "UID=1000"
+      - "GID=1000"
+      - "TZ=Asia/Singapore"
+
+      # https://github.com/lldap/lldap/blob/main/lldap_config.docker_template.toml
+      - LLDAP_VERBOSE=false
+      - "LLDAP_JWT_SECRET=changeme"
+      - "LLDAP_KEY_SEED=changeme"
+      - "LLDAP_LDAP_BASE_DN=dc=example,dc=com"
+      - "LLDAP_LDAP_USER_PASS=changeme"
+      - "LLDAP_DATABASE_URL=sqlite:///data/users.db?mode=rwc"
+    volumes:
+      - "./data:/data"
+    restart: unless-stopped
+    networks:
+      lldap:
+        ipv4_address: 192.0.0.2
+
+  syncthing:
+    container_name: syncthing-test
+    image: lscr.io/linuxserver/syncthing:${SYNCTHING_IMG_VER:-1.23.1}
+    restart: unless-stopped
+    environment:
+      - "PUID=${CUID:-1000}"
+      - "PGID=${CGID:-1000}"
+      - "TZ=${TZ:-Asia/Singapore}"
+    volumes:
+      - "${SYNCTHING_CONFIG_DIR:-./syncthing/config}:/config"
+      - "${SYNCTHING_DATA_DIR:-./syncthing/sync}:/data"
+    ports:
+      - 8385:8384
+      - 22001:22000/tcp  # listening port
+      - 21028:21027/udp  # protocol discovery
+    networks:
+      lldap:
+        ipv4_address: 192.0.0.3
+
+networks:
+  lldap:
+    name: lldap
+    ipam:
+      config:
+        - subnet: 192.0.0.0/24
+          gateway: 192.0.0.1
