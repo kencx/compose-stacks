@@ -14,6 +14,7 @@ services:
     volumes:
       - ./config:/config
       - ./torrents:/downloads
+      - ./jackett.json:/config/qBittorrent/nova3/engines/jackett.json
     network_mode: "service:wireguard"
 
   wireguard:
@@ -32,7 +33,37 @@ services:
       - ./wg:/config
       - /lib/modules:/lib/modules
     ports:
+      # qbittorrent
       - 6011:6011
       - 6881:6881
       - 6881:6881/udp
       - 51821:51820/udp
+      # jackett
+      - 9117:9117
+      # flaresolverr
+      - 8191:8191
+
+  jackett:
+    image: ghcr.io/linuxserver/jackett:0.23.71
+    container_name: jackett
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Singapore
+      # - RUN_OPTS=
+    volumes:
+      - ./jackett/config:/config
+      - ./jackett/blackhole:/downloads
+    network_mode: "service:wireguard"
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.1
+    container_name: flaresolverr
+    restart: unless-stopped
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Asia/Singapore
+    network_mode: "service:wireguard"

@@ -17,3 +17,5 @@ stack
 !*/*.env.example
 
 !traefik/rules-example/*.yml
+
+jackett.json
